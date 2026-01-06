@@ -143,5 +143,66 @@ without relying on standard browser download safeguards.
 ### 4.3 Application Entry Point
 
 The `MainActivity` initializes the WebView and immediately loads a remote URL
-upon application launch:
+upon application launch: [Remote Web Content URL]
 
+
+All subsequent application behavior is driven by content loaded from this endpoint.
+
+---
+
+## 5. Network & Infrastructure Observations
+
+### 5.1 Web Content Behavior
+
+The landing page dynamically loads resources from additional domains.
+
+Observed characteristics:
+
+- Presentation as an application distribution interface
+- Heavy use of JavaScript and delayed content loading
+- Inclusion of advertising and analytics scripts
+
+---
+
+### 5.2 Backend Status
+
+The previously embedded backend endpoint responds with a deactivated status.
+
+This suggests that one component of the backend infrastructure is no longer active.
+However, the WebView‑based interface remains functional as long as
+the remote website is reachable.
+
+---
+
+## 6. Behavioral Risk Scenario (Capability Chain)
+
+1. A user installs the application from a third-party repository.
+2. The application launches and loads a remote web page inside a WebView.
+3. A native JavaScript bridge (`WebToNativeInterface`) is injected.
+4. Remote JavaScript queries device and environment information.
+5. The web content triggers file downloads via native methods.
+6. Downloaded files are written to storage and prepared for installation
+   through system intents requiring user interaction.
+
+---
+
+## 7. Conclusion
+
+This application demonstrates a **high-risk WebView-centric architecture** in which
+remote web content is granted access to sensitive native Android functionality.
+
+By exposing system-level capabilities through a JavaScript bridge, the application
+creates a flexible delivery mechanism that can be repurposed to download,
+install, or stage additional software based entirely on remote content.
+
+Such designs significantly expand the attack surface and are not aligned with
+secure Android application development practices.
+
+---
+
+## 8. Defensive Recommendations
+
+- Avoid installing applications from unverified third-party repositories.
+- Restrict or monitor WebView usage with `JavascriptInterface` exposure.
+- Consider network-level blocking of domains used by the application.
+- Inspect the device for additional downloaded files if installation occurred.
