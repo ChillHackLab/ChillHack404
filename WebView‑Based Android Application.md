@@ -23,9 +23,9 @@ assert intent, attribution, or ownership of the analyzed application.
 
 ## 1. Executive Summary
 
-The analyzed Android application presents itself as a third‑party app store.
+The analyzed Android application presents itself as a third-party app distribution tool.  
 Static analysis shows that the application is not a fully native implementation,
-but instead operates as a **WebView‑based wrapper** built using the **Web2Native framework**.
+but operates as a **WebView‑based wrapper** built using the **Web2Native framework**.
 
 The application loads remote web content and exposes native Android functionality
 to JavaScript through a `JavascriptInterface` bridge.  
@@ -33,7 +33,7 @@ This design enables the loaded web content to invoke **high‑risk system capabi
 including file downloads, triggering installation intents, accessing device identifiers,
 and interacting with SMS‑related APIs.
 
-While a previously identified Firebase backend is no longer active, the application
+While a previously embedded backend server is no longer active, the application
 continues to rely on a live web interface for behavior control, which represents a
 persistent security risk as long as the remote content remains accessible.
 
@@ -64,7 +64,7 @@ Notable findings include:
 
 - **`android:usesCleartextTraffic="true"`**  
   Explicitly allows unencrypted HTTP traffic, bypassing modern Android defaults
-  and increasing exposure to network‑based manipulation.
+  and increasing exposure to network-based manipulation.
 
 - **Broad Android Version Support (API 23+)**  
   Allows execution on older Android versions that may lack recent security patches.
@@ -84,7 +84,7 @@ The following hardcoded identifiers were identified during static analysis:
 - Third‑party SDK identifiers (e.g., Facebook App ID, Google API keys)
 
 These artifacts indicate the application was designed to integrate with
-external cloud services and third‑party platforms.
+external cloud services and third-party platforms.
 
 ---
 
@@ -120,7 +120,7 @@ invoke native Android methods.
 
 - **SMS‑Related APIs**
   - Presence of methods that interact with SMS registration and configuration.
-  - No complete end‑to‑end interception flow was confirmed through static analysis alone.
+  - No complete end‑to-end interception flow was confirmed through static analysis alone.
 
 ---
 
@@ -135,7 +135,7 @@ The application implements a custom data transfer flow:
 - **File Writer (`bb/f1.java`)**
   - Writes downloaded byte arrays directly to cache or external storage locations.
 
-This design enables remote content to be delivered and prepared for execution
+This design enables remote content to be delivered and prepared for installation
 without relying on standard browser download safeguards.
 
 ---
@@ -145,78 +145,3 @@ without relying on standard browser download safeguards.
 The `MainActivity` initializes the WebView and immediately loads a remote URL
 upon application launch:
 
-```
-
-[https://tutuapp.store/androidstore/](https://tutuapp.store/androidstore/)
-
-```
-
-All subsequent application behavior is driven by content loaded from this endpoint.
-
----
-
-## 5. Network & Infrastructure Observations
-
-### 5.1 Web Content Behavior
-
-The initial landing page dynamically loads resources from additional domains,
-including:
-
-- `tutuapp-vip.com`
-
-Observed characteristics:
-
-- Presentation as an application marketplace
-- Heavy use of JavaScript and delayed content loading
-- Inclusion of advertising and analytics scripts
-
----
-
-### 5.2 Backend Status
-
-The previously embedded Firebase endpoint responds with:
-
-```
-
-"The Firebase database 'alpha-af0d2' has been deactivated."
-
-```
-
-This suggests that one component of the backend infrastructure is no longer active.
-However, the WebView‑based control mechanism remains functional as long as
-the remote website is reachable.
-
----
-
-## 6. Behavioral Risk Scenario (Capability Chain)
-
-1. A user installs the application from a third‑party repository.
-2. The application launches and loads a remote web page inside a WebView.
-3. A native JavaScript bridge (`WebToNativeInterface`) is injected.
-4. Remote JavaScript queries device and environment information.
-5. The web content triggers file downloads via native methods.
-6. Downloaded files are written to storage and prepared for installation
-   through system intents requiring user interaction.
-
----
-
-## 7. Conclusion
-
-This application demonstrates a **high‑risk WebView‑centric architecture** in which
-remote web content is granted access to sensitive native Android functionality.
-
-By exposing system‑level capabilities through a JavaScript bridge, the application
-creates a flexible delivery mechanism that can be repurposed to download,
-install, or stage additional software based entirely on remote content.
-
-Such designs significantly expand the attack surface and are not aligned with
-secure Android application development practices.
-
----
-
-## 8. Defensive Recommendations
-
-- Avoid installing applications from unverified third‑party repositories.
-- Restrict or monitor WebView usage with `JavascriptInterface` exposure.
-- Block listed domains at the network or DNS level where applicable.
-- Inspect the device for additional downloaded APK files if installation occurred.
