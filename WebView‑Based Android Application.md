@@ -200,20 +200,7 @@ the remote website is reachable.
 
 ---
 
-## 7. Indicators of Interest (IOIs)
-
-| Type | Value | Description |
-| --- | --- | --- |
-| URL | `https://tutuapp.store/androidstore/` | Initial WebView Entry |
-| Domain | `tutuapp-vip.com` | Resource Hosting |
-| Firebase | `alpha-af0d2.firebaseio.com` | Deactivated Backend |
-| Storage | `alpha-af0d2.appspot.com` | Cloud Storage |
-| String | `WebToNativeInterface` | JS Bridge Name |
-| Class | `bb/n1.java` | Native Bridge Implementation |
-
----
-
-## 8. Conclusion
+## 7. Conclusion
 
 This application demonstrates a **high‑risk WebView‑centric architecture** in which
 remote web content is granted access to sensitive native Android functionality.
@@ -227,7 +214,7 @@ secure Android application development practices.
 
 ---
 
-## 9. Defensive Recommendations
+## 8. Defensive Recommendations
 
 - Avoid installing applications from unverified third‑party repositories.
 - Restrict or monitor WebView usage with `JavascriptInterface` exposure.
